@@ -1,0 +1,11 @@
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\bin\Debug\netcoreapp2.1\BankQuestionv3.deps.json
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\bin\Debug\netcoreapp2.1\BankQuestionv3.runtimeconfig.json
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\bin\Debug\netcoreapp2.1\BankQuestionv3.runtimeconfig.dev.json
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\bin\Debug\netcoreapp2.1\BankQuestionv3.dll
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\bin\Debug\netcoreapp2.1\BankQuestionv3.pdb
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\obj\Debug\netcoreapp2.1\BankQuestionv3.csproj.AssemblyReference.cache
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\obj\Debug\netcoreapp2.1\BankQuestionv3.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\obj\Debug\netcoreapp2.1\BankQuestionv3.AssemblyInfoInputs.cache
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\obj\Debug\netcoreapp2.1\BankQuestionv3.AssemblyInfo.cs
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\obj\Debug\netcoreapp2.1\BankQuestionv3.dll
+C:\Users\Administrator\source\repos\BankQuestionv3\BankQuestionv3\obj\Debug\netcoreapp2.1\BankQuestionv3.pdb
