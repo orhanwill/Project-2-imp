@@ -1,0 +1,353 @@
+MAIN
+
+using Assesment_02v2;
+using System;
+using System.Collections.Generic;
+
+namespace Assessment_02v2
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            CheckingAccount a0 = new CheckingAccount("03152512525", "abc", 600);
+            SavingsAccount a1 = new SavingsAccount("03152512525", "abc", 60, 98);
+            a1.DisplayAccountInfo();
+            a0.Withdraw(123);
+            a0.Transaction_History();
+            a0.DisplayAccountInfo();
+            Console.WriteLine(a0.TransactionTypes);
+        }
+    }
+}
+
+
+
+BANK.CS
+
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Assesment_02v2
+{
+    // The Bank class represents a collection of BankAccount objects, an example of Aggregation.
+    // Aggregation is a type of Association where the aggregate (Zoo) can exist independently of the parts (Habitats).
+    public class Bank
+    {
+        // The BankAccounts property is a List<BankAccount>, a collection of different BankAccounts present in the BankAccounts
+        public List<BankAccount> BankAccounts { get; set; }
+        // The Dict_BankAccounts property is a Dictionary<string,BankAccount>, a collection of different BankAccounts numbers and BankAccounts as key value pair present in the BankAccounts
+        public Dictionary<string, BankAccount> Dict_BankAccounts { get; set; }
+
+        public Bank()
+        {
+            BankAccounts = new List<BankAccount>();
+            Dict_BankAccounts = new Dictionary<string, BankAccount>();
+        }
+        // A Method to add bank account in bank
+        public void AddAccount(BankAccount accunt)
+        {
+            Dict_BankAccounts[accunt.Account_Number] = accunt;
+            BankAccounts.Add(accunt);
+            Console.WriteLine($"{accunt.Name} with {accunt.Account_Number} has been added to the zoo.");
+        }
+        // A methoid to deposit amount to all bankaccount
+        public void DepositToAccount(int amount)
+        {
+            foreach (var accunt in BankAccounts)
+            {
+                accunt.Deposit(amount);
+            }
+        }
+        // A methoid to Withdraw amount to all bankaccount
+        public void WithdrawFromAccount(int amount)
+        {
+            foreach (var accunt in BankAccounts)
+            {
+                accunt.Deposit(amount);
+            }
+        }
+    }
+}
+
+
+
+BANKACCOUNT
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Assesment_02v2
+{
+    // Declaring an abstract class BankAccount. This is a form of abstraction in OOP.
+    // Abstraction allows complex real-world concepts to be represented in a simplified manner in a program.
+    // BankAccount class represents general characteristics of all BankAccounts.
+    // BankAccount is also implementing the IBankAccount interface, so it must provide an implementation for Deposit,Withdraw.
+    public abstract class BankAccount : IBankAccount
+    {
+        // Properties are an example of encapsulation where you can have data validation inside getters and setters 
+        // Here, however, we are using auto-implemented properties with default getters and setters.
+
+        // The Guid data type is used to generate a unique identifier (ID) for each BankAccount object.
+        public string Account_Number { get; set; }
+        public string Name { get; set; }
+        public float Balance { get; set; }
+        public float InterestRate { get; set; }
+        public List<Transaction> Transections ;
+        public Dictionary<string, List<Transaction>> TransactionTypes { get; set; }
+        // This is a constructor method for the BankAccount class, encapsulating the creation of an BankAccount.
+        // Encapsulation protects the data from outside interference and misuse.
+        public BankAccount(string account_number, string name, float balance)
+        {
+            Account_Number = account_number;
+            Name = name;
+            Balance = balance;
+            float InterestRate = 0;
+            Transections =new List<Transaction>();
+            Transaction transfer = new Transaction($"Amount {balance} Added as initial balance");
+            Transections.Add(transfer);
+            TransactionTypes = new Dictionary<string, List<Transaction>>();
+            
+            TransactionTypes.Add("Deposit", Transections);
+            //TransactionTypes["Deposit"].Add(transfer);
+        }
+        public virtual double CalculateInterest() {
+            Console.WriteLine($"Interset is { Balance * InterestRate}");
+            return Balance * InterestRate; }
+        // This is a void method, use to print all the .
+        public void Transaction_History()
+        {
+            foreach(Transaction i in Transections)
+            {
+                //Console.WriteLine(i);
+                i.view();
+            }
+        }
+        // This is a virtual method, allowing for the method to be overridden in subclasses.
+        // This is another form of Polymorphism. The code will call the appropriate method depending on the actual object type at runtime.
+        public virtual void Deposit(float amount)
+        {
+            Transaction transfer = new Transaction($"Amount {amount} Deposit");
+            Transections.Add(transfer);
+            TransactionTypes["Deposit"].Add(transfer);
+
+            Balance += amount;
+            Console.WriteLine($"Amount {amount} Deposited");
+        }
+        // This is a virtual method, allowing for the method to be overridden in subclasses.
+        // This is another form of Polymorphism. The code will call the appropriate method depending on the actual object type at runtime.
+        public virtual void Withdraw(float amount)
+        {
+            Transaction transfer = new Transaction($"Amount {amount} Withdraw");
+            Transections.Add(transfer);
+            TransactionTypes["Withdraw"].Add(transfer);
+            Balance -= amount;
+            Console.WriteLine($"Amount {amount} Withdraw");
+        }
+        // Declaring an abstract method DisplayAccountInfo in Abstract class. This is a form of abstraction in OOP.
+        // Abstraction class should have atleast one Abstraction method
+        // Abstraction allows complex real-world concepts to be represented in a simplified manner in a program.
+        // This method should be implemented in child classes
+        public abstract void DisplayAccountInfo();
+    }
+}
+
+
+SAVINGS ACCOUNT
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Assesment_02v2
+{
+
+    // The SavingsAccount class is a derived class from BankAccount. This is Inheritance.
+    // Inheritance allows a class to have the properties and methods of another class.
+    // SavingsAccount is also implementing the ITransaction interface, so it must provide an implementation for PrintTransaction,ExecuteTransaction.
+    public class SavingsAccount : BankAccount, ITransaction
+    {
+        public float InterestRate { get; set; }
+        // This is the constructor for the SavingsAccount class, which calls the base class constructor.
+        // The "base" keyword is used to access members in the base class from within the derived class.
+        public SavingsAccount(string account_number, string name, float balance, float interestRate) : base(account_number, name, balance)
+        {
+            InterestRate = interestRate;
+        }
+        public override double CalculateInterest()
+        {
+            Console.WriteLine($"Interset is { Balance * InterestRate}");
+            return Balance * InterestRate;
+        }
+        // This method overrides the virtual method from the parent class.
+        // This is another example of Polymorphism.
+        public override void DisplayAccountInfo()
+        {
+            Console.WriteLine($"{Name} with account number  {Account_Number} has {Balance} balance.");
+        }
+        // ExecuteTransaction,PrintTransaction method provides the implementation for the ITransaction interface.
+        // This is an example of Polymorphism. At runtime, the appropriate method will be called depending on the actual object type.
+        public void ExecuteTransaction(decimal amount) { Console.WriteLine("This is ExecuteTransaction function"); }
+
+        public void PrintTransaction() { Console.WriteLine("This is PrintTransaction function"); }
+
+
+        public override void Deposit(float amount)
+        {
+            Transaction transfer = new Transaction($"Amount {amount} Deposit");
+            Transections.Add(transfer);
+            TransactionTypes["Deposit"].Add(transfer);
+            Console.WriteLine($"Amount {amount} Deposited");
+            Balance = Balance + (amount * (1 + InterestRate) / 100);
+        }
+    }
+}
+
+
+CHECKING ACCOUNT
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Assesment_02v2
+{
+    public class CheckingAccount : BankAccount, ITransaction
+    {
+
+        public CheckingAccount(string account_number, string name, float balance) : base(account_number, name, balance)
+
+        { }
+        public void ExecuteTransaction(decimal amount) { Console.WriteLine("This is ExecuteTransaction function"); }
+
+        public void PrintTransaction() { Console.WriteLine("This is PrintTransaction function"); }
+        public override void DisplayAccountInfo()
+        {
+            Console.WriteLine($"{Name} with account number  {Account_Number} has {Balance} balance.");
+        }
+
+        public override double CalculateInterest()
+        {
+            Console.WriteLine($"Interset is { Balance * InterestRate}");
+            return Balance * InterestRate;
+        }
+        public override void Withdraw(float amount)
+        {
+            if (Balance < amount)
+            {
+                Console.WriteLine("Error your Balance is low");
+            }
+            else
+            {
+                if (TransactionTypes.ContainsKey("Withdraw"))
+                {
+
+                    Transaction transfer = new Transaction($"Amount {amount} Withdraw");
+                    Transections.Add(transfer);
+                    TransactionTypes["Withdraw"].Add(transfer);
+                    Console.WriteLine($"Amount {amount} Withdraw");
+                    Balance -= amount;
+                }
+                else
+                {
+                     
+                    Transaction transfer = new Transaction($"Amount {amount} Withdraw");
+                    Transections.Add(transfer);
+                    TransactionTypes["Withdraw"].Add(transfer);
+                    Console.WriteLine($"Amount {amount} Withdraw");
+                    Balance -= amount;
+                }
+
+            }
+        }
+    }
+}
+
+
+LOAN ACCOUNT??
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Assesment_02v2
+{
+    public class LoanAccount : BankAccount, ITransaction
+    {
+        public LoanAccount(string account_number, string name, float balance, float interestRate) : base(account_number, name, balance) { }
+        public override double CalculateInterest()
+        {
+            Console.WriteLine($"Interset is { Balance * InterestRate}");
+            return Balance * InterestRate;
+        }
+        public void ExecuteTransaction(decimal amount) { Console.WriteLine("This is ExecuteTransaction function"); }
+
+        public void PrintTransaction() { Console.WriteLine("This is PrintTransaction function"); }
+        public override void DisplayAccountInfo()
+        {
+            Console.WriteLine($"{Name} with account number  {Account_Number} has {Balance} balance.");
+        }
+    }
+}
+
+
+IBANK
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Assesment_02v2
+{
+    // Declaring an interface IBankAccount. This is an example of Polymorphism.
+    // Polymorphism allows objects of different classes to be treated as objects of a common superclass or interface.
+    // Here, any class that implements IBankAccount can be used wherever IBankAccount is expected.
+    public interface IBankAccount
+    {
+        void Deposit(float amount);
+        void Withdraw(float amount);
+    }
+}
+
+
+
+ITRANSCATION
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Assesment_02v2
+{
+    public interface ITransaction
+    {
+        // Declaring an interface ITransaction. This is an example of Polymorphism.
+        // Polymorphism allows objects of different classes to be treated as objects of a common superclass or interface.
+        // Here, any class that implements ITransaction can be used wherever ITransaction is expected.
+        void ExecuteTransaction(decimal amount);
+        void PrintTransaction();
+    }
+}
+
+
+
+TRANSACTION
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Assesment_02v2
+{
+    public class Transaction
+    {
+        public String Transection_;
+        public Transaction(string transection)
+        {
+            Transection_ = transection;
+        }
+        public void view()
+        {
+            Console.WriteLine(Transection_);
+        }
+    }
+}
+
+

@@ -1,0 +1,373 @@
+MAIN
+
+using System;
+
+namespace BankQuestionv4
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Hello World!");
+        }
+    }
+}
+
+
+
+BANK
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BankQuestionv4
+{
+    public class Bank
+    {
+
+        public List<BankAccount> BankAccounts { get; set; }
+
+        public Dictionary<string, BankAccount> Dict_BankAccounts { get; set; }
+        public Bank()
+        {
+            BankAccounts = new List<BankAccount>();
+            Dict_BankAccounts = new Dictionary<string, BankAccount>();
+        }
+        public void AddBankAccount(BankAccount account)
+        {
+            Dict_BankAccounts[account.Account_Number] = account;
+            BankAccounts.Add(account);
+            Console.WriteLine($"Acc No: {account.Name }  with {account.Account_Number} has been added.");
+        }
+        public void DepositToAccount(BankAccount acc1, double money)
+        {
+            foreach (BankAccount account in BankAccounts)
+            {
+                if (account == acc1)
+                {
+                    acc1.Balance += money;
+                    Console.WriteLine($"The total amount deposited is:  {money}");
+                    Console.WriteLine($"The total amount we got is:  {acc1.Balance}");
+                }
+                //if (account != acc1)
+                //{
+                //    Console.WriteLine(" The account is not found: ");
+                //}
+
+
+            }
+        }
+        public void WithdrawFromAccount(BankAccount acc1, double money)
+        {
+            foreach (BankAccount account in BankAccounts)
+            {
+                if (account == acc1)
+                {
+                    acc1.Balance -= money;
+                    Console.WriteLine($"The total amount withdrawn is:  {money}");
+                    Console.WriteLine($"The total amount we got is:  {acc1.Balance}");
+                }
+                //if (account != acc1)
+                //{
+                //    Console.WriteLine(" The account is not found: ");
+                //}
+
+
+            }
+        }
+
+
+    }
+}
+
+
+
+
+
+
+BankACCOUNT
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BankQuestionv4
+{
+    public abstract class BankAccount : ITransaction
+    {
+        public string Name { get; set; }
+        public int Account_Number { get; set; }
+        public double Balance { get; set; }
+        public List<Transaction> Transactions1;
+        public Dictionary<string, List<Transaction>> TransactionTypes { get; set; }
+
+        public BankAccount(string name, int account_number, double balance)
+        {
+            Name = name;
+            Account_Number = account_number;
+            Balance = balance;
+            Transactions1 = new List<Transaction>();
+            Transaction transfer = new Transaction($"Amount {balance} Added as initial balance");
+            Transactions1.Add(transfer);
+            TransactionTypes = new Dictionary<string, List<Transaction>>();
+
+            TransactionTypes.Add("Deposit", Transactions1);
+
+        }
+        public virtual void Deposit(double amountd) { }
+        public virtual void Withdraw(double amountw) { }
+        public virtual void ExecuteTransaction(double amount) { }
+        public virtual void PrintTransaction() { }
+        public void Transaction_History()
+        {
+            foreach (Transaction i in Transactions1)
+            {
+                //Console.WriteLine(i);
+                i.view();
+            }
+        }
+        public virtual void TakeLoan(double amountl) { }
+        public virtual void CalculateInterest(double amountr) { }
+
+        public abstract void DisplayAccountInfo();
+    }
+}
+
+
+%%%%%%%%%%%%%%%%
+SAVINGS ACCOUNT
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BankQuestionv4
+{
+    public class SavingsAccount : BankAccount, ITransaction
+    {
+        public double InterestRate { get; set; }
+        public SavingsAccount(string name, int account_number, double balance, double interestrate) : base(name, account_number, balance)
+        {
+            InterestRate = interestrate;
+        }
+        public override void CalculateInterest(double amountr)
+        {
+            double a = amountr * (InterestRate / 100);
+            Console.WriteLine($"The total amount of interest we got is {a}");
+        }
+        public override void Deposit(double amountd)
+        {
+            Transaction transfer = new Transaction($"Amount {amountd} Deposit");
+            Transactions1.Add(transfer);
+            TransactionTypes["Deposit"].Add(transfer);
+            Balance += amountd * (1 + InterestRate / 100);
+            Console.WriteLine($"The amount now deposited is {amountd}");
+            Console.WriteLine($"The total amount after deposit and interest rate is: {Balance}");
+        }
+        public override void DisplayAccountInfo()
+        {
+            Console.WriteLine($"The Account Holder Name:  {Name}");
+            Console.WriteLine($"The Account Number:  {Account_Number}");
+            Console.WriteLine($"The Account Balance: {Balance}");
+            Console.WriteLine("____________________");
+        }
+
+    }
+}
+
+
+
+
+
+CHECKING ACCOUNT
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BankQuestionv4
+{
+    public class CheckingAccount : BankAccount, ITransaction
+    {
+        public double InterestRate { get; set; }
+        public CheckingAccount(string name, int account_number, double balance, double interestrate) : base(name, account_number, balance)
+        { InterestRate = interestrate; }
+        public override void CalculateInterest(double amountr)
+        {
+            double a = amountr * (InterestRate / 100);
+            Console.WriteLine($"The total amount of interest we got is {a}");
+        }
+        public override void ExecuteTransaction(double amountt)
+        {
+            Console.WriteLine($"The transaction amount of {amountt } is executed");
+        }
+        public override void PrintTransaction()
+        {
+            Console.WriteLine($"Your Transaction has been done.");
+        }
+        public override void Withdraw(double amountw)
+        {
+            if (Balance < amountw)
+            {
+                Console.WriteLine("You have an unsufficient amount to withdraw");
+            }
+            else
+            {
+                if (TransactionTypes.ContainsKey("Withdraw"))
+                {
+
+                    Transaction transfer = new Transaction($"The Amount {amountw} is Withdrawn");
+                    Transactions1.Add(transfer);
+                    TransactionTypes["Withdraw"].Add(transfer);
+                    Console.WriteLine($" The Amount {amountw} is Withdrawn");
+                    Balance -= amountw;
+                }
+                else
+                {
+
+                    Transaction transfer = new Transaction($"The Amount {amountw} is Withdrawn");
+                    Transactions1.Add(transfer);
+                    TransactionTypes["Withdraw"].Add(transfer);
+                    Console.WriteLine($"The Amount {amountw} is Withdrawn");
+                    Balance -= amountw;
+                }
+            }
+
+        }
+        //public override void Deposit(double amountd)
+        //{
+        //    Transaction transfer = new Transaction($"Amount {amountd} Deposit");
+        //    Transactions1.Add(transfer);
+        //    TransactionTypes["Deposit"].Add(transfer);
+        //    Balance += amountd * (1 + InterestRate / 100);
+        //    Console.WriteLine($"The amount now deposited is {amountd}");
+        //    Console.WriteLine($"The total amount after deposit and interest rate is: {Balance}");
+        //}
+        public override void DisplayAccountInfo()
+        {
+            Console.WriteLine($"The Account Holder Name:  {Name}");
+            Console.WriteLine($"The Account Number:  {Account_Number}");
+            Console.WriteLine($"The Account Balance: {Balance}");
+            Console.WriteLine("____________________");
+        }
+    }
+}
+
+
+
+LOAN ACCOUNT
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BankQuestionv4
+{
+    public class LoanAccount : BankAccount, ITransaction
+    {
+        public double LoanDuration { get; set; }
+        public double InterestRate { get; set; }
+        public double LoanAmount { get; set; }
+        double a = 0;
+        public LoanAccount(string name, int account_number, double balance, double interestrate, double loanduration) : base(name, account_number, balance)
+        {
+            InterestRate = interestrate;
+            LoanDuration = loanduration;
+        }
+        public override void TakeLoan(double amountl)
+        {
+            LoanAmount += amountl;
+            Console.WriteLine($"The amount of loan {amountl} is intiated.");
+        }
+        public override void Deposit(double amountd)
+        {
+
+            LoanAmount -= amountd;
+            Console.WriteLine($"The amount now deposited after loan is {amountd}");
+            Console.WriteLine($"The total loan amount after deposit  is: {LoanAmount}");
+        }
+        public override void Withdraw(double amountw)
+        {
+
+            LoanAmount += amountw;
+            Console.WriteLine($"The amount now withdrawn after loan is {amountw}");
+            Console.WriteLine($"The total loan amount after withdraw  is: {LoanAmount}");
+        }
+        public override void ExecuteTransaction(double amountt)
+        {
+            Console.WriteLine($"The transaction amount of {amountt } is executed");
+        }
+        public override void PrintTransaction()
+        {
+            Console.WriteLine($"Your Transaction has been done.");
+        }
+        public override void DisplayAccountInfo()
+        {
+            Console.WriteLine($"The Account Holder Name:  {Name}");
+            Console.WriteLine($"The Account Number:  {Account_Number}");
+            Console.WriteLine($"The Account Balance: {Balance}");
+            Console.WriteLine("____________________");
+        }
+
+    }
+}
+
+
+
+
+
+IBANK
+
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BankQuestionv4
+{
+    public interface IBankAccount
+    {
+        void Deposit(double amount);
+        void Withdraw(double amount);
+    }
+}
+
+
+ITRANSACTION
+
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BankQuestionv4
+{
+    public interface ITransaction
+    {
+        void ExecuteTransaction(double amount);
+        void PrintTransaction();
+    }
+}
+
+
+
+
+TRANSACTION
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BankQuestionv4
+{
+    public class Transaction
+    {
+        public String Transaction1_;
+        public Transaction(string transection)
+        {
+            Transaction1_ = transection;
+        }
+        public void view()
+        {
+            Console.WriteLine(Transaction1_);
+        }
+    }
+}
+
+
